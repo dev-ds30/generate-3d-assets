@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Random 3D Asset Generator</title>
   <meta name="description" content="Generate random 3D assets with 31 shapes, 16 textures, and 6 materials. Download as OBJ, JSON, or GLTF.">
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,10 +21,10 @@
 <body>
   <div id="root"></div>
   
-  <script type="text/babel">
+  <script type="text/babel" data-type="module">
     const { useEffect, useRef, useState } = React;
 
-    const Random3DGenerator = () => {
+    function Random3DGenerator() {
       const containerRef = useRef(null);
       const sceneRef = useRef(null);
       const cameraRef = useRef(null);
@@ -42,53 +42,49 @@
         
         const segments = 64;
         
-        switch(type) {
-          case 'mobius-strip':
-            for (let i = 0; i <= segments; i++) {
-              for (let j = 0; j <= segments; j++) {
-                const u = (i / segments) * 2 * Math.PI;
-                const v = (j / segments - 0.5) * 0.5;
-                
-                const x = (1 + v * Math.cos(u / 2)) * Math.cos(u);
-                const y = (1 + v * Math.cos(u / 2)) * Math.sin(u);
-                const z = v * Math.sin(u / 2);
-                
-                positions.push(x, y, z);
-                uvs.push(i / segments, j / segments);
-              }
+        if (type === 'mobius-strip') {
+          for (let i = 0; i <= segments; i++) {
+            for (let j = 0; j <= segments; j++) {
+              const u = (i / segments) * 2 * Math.PI;
+              const v = (j / segments - 0.5) * 0.5;
+              
+              const x = (1 + v * Math.cos(u / 2)) * Math.cos(u);
+              const y = (1 + v * Math.cos(u / 2)) * Math.sin(u);
+              const z = v * Math.sin(u / 2);
+              
+              positions.push(x, y, z);
+              uvs.push(i / segments, j / segments);
             }
-            break;
-          case 'klein-bottle':
-            for (let i = 0; i <= segments; i++) {
-              for (let j = 0; j <= segments; j++) {
-                const u = (i / segments) * 2 * Math.PI;
-                const v = (j / segments) * 2 * Math.PI;
-                
-                const r = 2;
-                const x = (r + Math.cos(u / 2) * Math.sin(v) - Math.sin(u / 2) * Math.sin(2 * v)) * Math.cos(u);
-                const y = (r + Math.cos(u / 2) * Math.sin(v) - Math.sin(u / 2) * Math.sin(2 * v)) * Math.sin(u);
-                const z = Math.sin(u / 2) * Math.sin(v) + Math.cos(u / 2) * Math.sin(2 * v);
-                
-                positions.push(x * 0.3, y * 0.3, z * 0.3);
-                uvs.push(i / segments, j / segments);
-              }
+          }
+        } else if (type === 'klein-bottle') {
+          for (let i = 0; i <= segments; i++) {
+            for (let j = 0; j <= segments; j++) {
+              const u = (i / segments) * 2 * Math.PI;
+              const v = (j / segments) * 2 * Math.PI;
+              
+              const r = 2;
+              const x = (r + Math.cos(u / 2) * Math.sin(v) - Math.sin(u / 2) * Math.sin(2 * v)) * Math.cos(u);
+              const y = (r + Math.cos(u / 2) * Math.sin(v) - Math.sin(u / 2) * Math.sin(2 * v)) * Math.sin(u);
+              const z = Math.sin(u / 2) * Math.sin(v) + Math.cos(u / 2) * Math.sin(2 * v);
+              
+              positions.push(x * 0.3, y * 0.3, z * 0.3);
+              uvs.push(i / segments, j / segments);
             }
-            break;
-          case 'shell':
-            for (let i = 0; i <= segments; i++) {
-              for (let j = 0; j <= segments; j++) {
-                const u = (i / segments) * 2 * Math.PI;
-                const v = (j / segments) * 2 * Math.PI;
-                
-                const x = Math.pow(Math.E, v / (6 * Math.PI)) * Math.cos(v) * (1 + Math.cos(u));
-                const y = Math.pow(Math.E, v / (6 * Math.PI)) * Math.sin(v) * (1 + Math.cos(u));
-                const z = Math.pow(Math.E, v / (6 * Math.PI)) * Math.sin(u);
-                
-                positions.push(x * 0.5, y * 0.5, z * 0.5);
-                uvs.push(i / segments, j / segments);
-              }
+          }
+        } else if (type === 'shell') {
+          for (let i = 0; i <= segments; i++) {
+            for (let j = 0; j <= segments; j++) {
+              const u = (i / segments) * 2 * Math.PI;
+              const v = (j / segments) * 2 * Math.PI;
+              
+              const x = Math.pow(Math.E, v / (6 * Math.PI)) * Math.cos(v) * (1 + Math.cos(u));
+              const y = Math.pow(Math.E, v / (6 * Math.PI)) * Math.sin(v) * (1 + Math.cos(u));
+              const z = Math.pow(Math.E, v / (6 * Math.PI)) * Math.sin(u);
+              
+              positions.push(x * 0.5, y * 0.5, z * 0.5);
+              uvs.push(i / segments, j / segments);
             }
-            break;
+          }
         }
         
         for (let i = 0; i < segments; i++) {
@@ -115,221 +111,205 @@
         canvas.height = 512;
         const ctx = canvas.getContext('2d');
         
-        switch(type) {
-          case 'checkerboard':
-            const size = 64;
-            for (let i = 0; i < 8; i++) {
-              for (let j = 0; j < 8; j++) {
-                ctx.fillStyle = (i + j) % 2 === 0 ? `#${color.toString(16)}` : '#ffffff';
-                ctx.fillRect(i * size, j * size, size, size);
-              }
+        if (type === 'checkerboard') {
+          const size = 64;
+          for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+              ctx.fillStyle = (i + j) % 2 === 0 ? '#' + color.toString(16) : '#ffffff';
+              ctx.fillRect(i * size, j * size, size, size);
             }
-            break;
-          case 'stripes':
-            for (let i = 0; i < 512; i += 64) {
-              ctx.fillStyle = i % 128 === 0 ? `#${color.toString(16)}` : '#ffffff';
-              ctx.fillRect(i, 0, 64, 512);
-            }
-            break;
-          case 'dots':
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, 512, 512);
-            ctx.fillStyle = `#${color.toString(16)}`;
-            for (let i = 32; i < 512; i += 64) {
-              for (let j = 32; j < 512; j += 64) {
-                ctx.beginPath();
-                ctx.arc(i, j, 20, 0, Math.PI * 2);
-                ctx.fill();
-              }
-            }
-            break;
-          case 'gradient':
-            const gradient = ctx.createLinearGradient(0, 0, 512, 512);
-            gradient.addColorStop(0, `#${color.toString(16)}`);
-            gradient.addColorStop(1, '#ffffff');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 512, 512);
-            break;
-          case 'noise':
-            const imageData = ctx.createImageData(512, 512);
-            for (let i = 0; i < imageData.data.length; i += 4) {
-              const noise = Math.random() * 255;
-              imageData.data[i] = noise;
-              imageData.data[i + 1] = noise;
-              imageData.data[i + 2] = noise;
-              imageData.data[i + 3] = 255;
-            }
-            ctx.putImageData(imageData, 0, 0);
-            break;
-          case 'waves':
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, 512, 512);
-            ctx.strokeStyle = `#${color.toString(16)}`;
-            ctx.lineWidth = 4;
-            for (let y = 0; y < 512; y += 32) {
+          }
+        } else if (type === 'stripes') {
+          for (let i = 0; i < 512; i += 64) {
+            ctx.fillStyle = i % 128 === 0 ? '#' + color.toString(16) : '#ffffff';
+            ctx.fillRect(i, 0, 64, 512);
+          }
+        } else if (type === 'dots') {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, 512, 512);
+          ctx.fillStyle = '#' + color.toString(16);
+          for (let i = 32; i < 512; i += 64) {
+            for (let j = 32; j < 512; j += 64) {
               ctx.beginPath();
-              for (let x = 0; x < 512; x++) {
-                const wave = Math.sin(x * 0.02) * 10;
-                ctx.lineTo(x, y + wave);
-              }
-              ctx.stroke();
-            }
-            break;
-          case 'hexagons':
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, 512, 512);
-            ctx.fillStyle = `#${color.toString(16)}`;
-            const hexSize = 30;
-            for (let y = 0; y < 512; y += hexSize * 1.5) {
-              for (let x = 0; x < 512; x += hexSize * Math.sqrt(3)) {
-                const offsetX = (y / (hexSize * 1.5)) % 2 === 0 ? 0 : hexSize * Math.sqrt(3) / 2;
-                ctx.beginPath();
-                for (let i = 0; i < 6; i++) {
-                  const angle = (Math.PI / 3) * i;
-                  const hx = x + offsetX + hexSize * Math.cos(angle);
-                  const hy = y + hexSize * Math.sin(angle);
-                  if (i === 0) ctx.moveTo(hx, hy);
-                  else ctx.lineTo(hx, hy);
-                }
-                ctx.closePath();
-                ctx.fill();
-              }
-            }
-            break;
-          case 'brick':
-            ctx.fillStyle = `#${color.toString(16)}`;
-            ctx.fillRect(0, 0, 512, 512);
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 3;
-            const brickH = 64;
-            const brickW = 128;
-            for (let y = 0; y < 512; y += brickH) {
-              for (let x = 0; x < 512; x += brickW) {
-                const offset = (y / brickH) % 2 === 0 ? 0 : brickW / 2;
-                ctx.strokeRect(x + offset, y, brickW, brickH);
-              }
-            }
-            break;
-          case 'circuit':
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, 512, 512);
-            ctx.strokeStyle = `#${color.toString(16)}`;
-            ctx.lineWidth = 2;
-            for (let i = 0; i < 50; i++) {
-              ctx.beginPath();
-              ctx.moveTo(Math.random() * 512, Math.random() * 512);
-              for (let j = 0; j < 5; j++) {
-                const x = Math.random() * 512;
-                const y = Math.random() * 512;
-                Math.random() > 0.5 ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-              }
-              ctx.stroke();
-            }
-            ctx.fillStyle = `#${color.toString(16)}`;
-            for (let i = 0; i < 20; i++) {
-              ctx.beginPath();
-              ctx.arc(Math.random() * 512, Math.random() * 512, 5, 0, Math.PI * 2);
+              ctx.arc(i, j, 20, 0, Math.PI * 2);
               ctx.fill();
             }
-            break;
-          case 'camouflage':
-            const camo = ['#3d5a3d', '#5c7a3d', '#8b9d5f', '#4a5d3f'];
-            for (let i = 0; i < 100; i++) {
-              ctx.fillStyle = camo[Math.floor(Math.random() * camo.length)];
+          }
+        } else if (type === 'gradient') {
+          const gradient = ctx.createLinearGradient(0, 0, 512, 512);
+          gradient.addColorStop(0, '#' + color.toString(16));
+          gradient.addColorStop(1, '#ffffff');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(0, 0, 512, 512);
+        } else if (type === 'noise') {
+          const imageData = ctx.createImageData(512, 512);
+          for (let i = 0; i < imageData.data.length; i += 4) {
+            const noise = Math.random() * 255;
+            imageData.data[i] = noise;
+            imageData.data[i + 1] = noise;
+            imageData.data[i + 2] = noise;
+            imageData.data[i + 3] = 255;
+          }
+          ctx.putImageData(imageData, 0, 0);
+        } else if (type === 'waves') {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, 512, 512);
+          ctx.strokeStyle = '#' + color.toString(16);
+          ctx.lineWidth = 4;
+          for (let y = 0; y < 512; y += 32) {
+            ctx.beginPath();
+            for (let x = 0; x < 512; x++) {
+              const wave = Math.sin(x * 0.02) * 10;
+              ctx.lineTo(x, y + wave);
+            }
+            ctx.stroke();
+          }
+        } else if (type === 'hexagons') {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, 512, 512);
+          ctx.fillStyle = '#' + color.toString(16);
+          const hexSize = 30;
+          for (let y = 0; y < 512; y += hexSize * 1.5) {
+            for (let x = 0; x < 512; x += hexSize * Math.sqrt(3)) {
+              const offsetX = (y / (hexSize * 1.5)) % 2 === 0 ? 0 : hexSize * Math.sqrt(3) / 2;
               ctx.beginPath();
-              ctx.ellipse(
-                Math.random() * 512,
-                Math.random() * 512,
-                Math.random() * 80 + 20,
-                Math.random() * 80 + 20,
-                Math.random() * Math.PI,
-                0,
-                Math.PI * 2
-              );
+              for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i;
+                const hx = x + offsetX + hexSize * Math.cos(angle);
+                const hy = y + hexSize * Math.sin(angle);
+                if (i === 0) ctx.moveTo(hx, hy);
+                else ctx.lineTo(hx, hy);
+              }
+              ctx.closePath();
               ctx.fill();
             }
-            break;
-          case 'carbon-fiber':
-            ctx.fillStyle = '#1a1a1a';
-            ctx.fillRect(0, 0, 512, 512);
-            for (let y = 0; y < 512; y += 4) {
-              for (let x = 0; x < 512; x += 4) {
-                const shade = Math.random() * 50;
-                ctx.fillStyle = `rgb(${shade}, ${shade}, ${shade})`;
-                ctx.fillRect(x, y, 4, 4);
-              }
+          }
+        } else if (type === 'brick') {
+          ctx.fillStyle = '#' + color.toString(16);
+          ctx.fillRect(0, 0, 512, 512);
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 3;
+          const brickH = 64;
+          const brickW = 128;
+          for (let y = 0; y < 512; y += brickH) {
+            for (let x = 0; x < 512; x += brickW) {
+              const offset = (y / brickH) % 2 === 0 ? 0 : brickW / 2;
+              ctx.strokeRect(x + offset, y, brickW, brickH);
             }
-            break;
-          case 'wood':
-            const gradient2 = ctx.createLinearGradient(0, 0, 512, 0);
-            gradient2.addColorStop(0, '#8B4513');
-            gradient2.addColorStop(0.5, '#A0522D');
-            gradient2.addColorStop(1, '#8B4513');
-            ctx.fillStyle = gradient2;
-            ctx.fillRect(0, 0, 512, 512);
-            ctx.strokeStyle = 'rgba(139, 69, 19, 0.3)';
-            for (let i = 0; i < 20; i++) {
-              ctx.lineWidth = Math.random() * 3 + 1;
-              ctx.beginPath();
-              const startY = Math.random() * 512;
-              ctx.moveTo(0, startY);
-              for (let x = 0; x < 512; x += 50) {
-                ctx.quadraticCurveTo(x, startY + Math.random() * 20 - 10, x + 50, startY);
-              }
-              ctx.stroke();
-            }
-            break;
-          case 'marble':
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, 512, 512);
-            ctx.strokeStyle = `#${color.toString(16)}`;
-            for (let i = 0; i < 30; i++) {
-              ctx.lineWidth = Math.random() * 5 + 1;
-              ctx.globalAlpha = Math.random() * 0.3 + 0.1;
-              ctx.beginPath();
-              ctx.moveTo(Math.random() * 512, 0);
-              for (let y = 0; y < 512; y += 20) {
-                ctx.lineTo(Math.random() * 512, y);
-              }
-              ctx.stroke();
-            }
-            ctx.globalAlpha = 1;
-            break;
-          case 'scales':
-            ctx.fillStyle = `#${color.toString(16)}`;
-            ctx.fillRect(0, 0, 512, 512);
-            ctx.fillStyle = '#ffffff';
-            const scaleSize = 40;
-            for (let y = 0; y < 512; y += scaleSize / 2) {
-              for (let x = 0; x < 512; x += scaleSize) {
-                const offsetX = (y / (scaleSize / 2)) % 2 === 0 ? 0 : scaleSize / 2;
-                ctx.beginPath();
-                ctx.arc(x + offsetX, y, scaleSize / 2, 0, Math.PI, true);
-                ctx.fill();
-              }
-            }
-            break;
-          case 'stars':
-            ctx.fillStyle = '#000033';
-            ctx.fillRect(0, 0, 512, 512);
-            ctx.fillStyle = '#ffffff';
-            for (let i = 0; i < 200; i++) {
+          }
+        } else if (type === 'circuit') {
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(0, 0, 512, 512);
+          ctx.strokeStyle = '#' + color.toString(16);
+          ctx.lineWidth = 2;
+          for (let i = 0; i < 50; i++) {
+            ctx.beginPath();
+            ctx.moveTo(Math.random() * 512, Math.random() * 512);
+            for (let j = 0; j < 5; j++) {
               const x = Math.random() * 512;
               const y = Math.random() * 512;
-              const size = Math.random() * 2;
-              ctx.fillRect(x, y, size, size);
+              Math.random() > 0.5 ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
             }
-            ctx.fillStyle = `#${color.toString(16)}`;
-            for (let i = 0; i < 20; i++) {
-              const x = Math.random() * 512;
-              const y = Math.random() * 512;
-              const size = Math.random() * 3 + 2;
-              ctx.fillRect(x, y, size, size);
+            ctx.stroke();
+          }
+          ctx.fillStyle = '#' + color.toString(16);
+          for (let i = 0; i < 20; i++) {
+            ctx.beginPath();
+            ctx.arc(Math.random() * 512, Math.random() * 512, 5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        } else if (type === 'camouflage') {
+          const camo = ['#3d5a3d', '#5c7a3d', '#8b9d5f', '#4a5d3f'];
+          for (let i = 0; i < 100; i++) {
+            ctx.fillStyle = camo[Math.floor(Math.random() * camo.length)];
+            ctx.beginPath();
+            ctx.ellipse(
+              Math.random() * 512,
+              Math.random() * 512,
+              Math.random() * 80 + 20,
+              Math.random() * 80 + 20,
+              Math.random() * Math.PI,
+              0,
+              Math.PI * 2
+            );
+            ctx.fill();
+          }
+        } else if (type === 'carbon-fiber') {
+          ctx.fillStyle = '#1a1a1a';
+          ctx.fillRect(0, 0, 512, 512);
+          for (let y = 0; y < 512; y += 4) {
+            for (let x = 0; x < 512; x += 4) {
+              const shade = Math.random() * 50;
+              ctx.fillStyle = 'rgb(' + shade + ', ' + shade + ', ' + shade + ')';
+              ctx.fillRect(x, y, 4, 4);
             }
-            break;
-          default:
-            ctx.fillStyle = `#${color.toString(16)}`;
-            ctx.fillRect(0, 0, 512, 512);
+          }
+        } else if (type === 'wood') {
+          const gradient2 = ctx.createLinearGradient(0, 0, 512, 0);
+          gradient2.addColorStop(0, '#8B4513');
+          gradient2.addColorStop(0.5, '#A0522D');
+          gradient2.addColorStop(1, '#8B4513');
+          ctx.fillStyle = gradient2;
+          ctx.fillRect(0, 0, 512, 512);
+          ctx.strokeStyle = 'rgba(139, 69, 19, 0.3)';
+          for (let i = 0; i < 20; i++) {
+            ctx.lineWidth = Math.random() * 3 + 1;
+            ctx.beginPath();
+            const startY = Math.random() * 512;
+            ctx.moveTo(0, startY);
+            for (let x = 0; x < 512; x += 50) {
+              ctx.quadraticCurveTo(x, startY + Math.random() * 20 - 10, x + 50, startY);
+            }
+            ctx.stroke();
+          }
+        } else if (type === 'marble') {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, 512, 512);
+          ctx.strokeStyle = '#' + color.toString(16);
+          for (let i = 0; i < 30; i++) {
+            ctx.lineWidth = Math.random() * 5 + 1;
+            ctx.globalAlpha = Math.random() * 0.3 + 0.1;
+            ctx.beginPath();
+            ctx.moveTo(Math.random() * 512, 0);
+            for (let y = 0; y < 512; y += 20) {
+              ctx.lineTo(Math.random() * 512, y);
+            }
+            ctx.stroke();
+          }
+          ctx.globalAlpha = 1;
+        } else if (type === 'scales') {
+          ctx.fillStyle = '#' + color.toString(16);
+          ctx.fillRect(0, 0, 512, 512);
+          ctx.fillStyle = '#ffffff';
+          const scaleSize = 40;
+          for (let y = 0; y < 512; y += scaleSize / 2) {
+            for (let x = 0; x < 512; x += scaleSize) {
+              const offsetX = (y / (scaleSize / 2)) % 2 === 0 ? 0 : scaleSize / 2;
+              ctx.beginPath();
+              ctx.arc(x + offsetX, y, scaleSize / 2, 0, Math.PI, true);
+              ctx.fill();
+            }
+          }
+        } else if (type === 'stars') {
+          ctx.fillStyle = '#000033';
+          ctx.fillRect(0, 0, 512, 512);
+          ctx.fillStyle = '#ffffff';
+          for (let i = 0; i < 200; i++) {
+            const x = Math.random() * 512;
+            const y = Math.random() * 512;
+            const size = Math.random() * 2;
+            ctx.fillRect(x, y, size, size);
+          }
+          ctx.fillStyle = '#' + color.toString(16);
+          for (let i = 0; i < 20; i++) {
+            const x = Math.random() * 512;
+            const y = Math.random() * 512;
+            const size = Math.random() * 3 + 2;
+            ctx.fillRect(x, y, size, size);
+          }
+        } else {
+          ctx.fillStyle = '#' + color.toString(16);
+          ctx.fillRect(0, 0, 512, 512);
         }
         
         const texture = new THREE.CanvasTexture(canvas);
@@ -342,11 +322,8 @@
         const types = [
           'cube', 'sphere', 'cylinder', 'torus', 'cone', 
           'octahedron', 'dodecahedron', 'icosahedron', 'tetrahedron',
-          'torusKnot', 'ring', 'plane', 'pyramid', 'prism',
-          'star', 'diamond', 'rounded-cube', 'capsule', 'egg',
-          'mobius-strip', 'klein-bottle', 'shell', 'double-torus',
-          'twisted-box', 'spiked-sphere', 'gear', 'spring',
-          'crystal', 'polyhedron', 'hyperboloid'
+          'torusKnot', 'ring', 'pyramid', 'prism',
+          'star', 'diamond'
         ];
         const randomType = types[Math.floor(Math.random() * types.length)];
         
@@ -366,216 +343,330 @@
         ];
         const randomTexture = textureTypes[Math.floor(Math.random() * textureTypes.length)];
         
-        const materialTypes = ['standard', 'metallic', 'glossy', 'glass', 'emissive', 'wireframe'];
+        const materialTypes = ['standard', 'metallic', 'glossy', 'wireframe'];
         const randomMaterial = materialTypes[Math.floor(Math.random() * materialTypes.length)];
         
         let geometry;
         let params = {};
         
-        switch(randomType) {
-          case 'cube':
-            const size = Math.random() * 2 + 1;
-            geometry = new THREE.BoxGeometry(size, size, size);
-            params = { type: 'cube', size };
-            break;
-          case 'sphere':
-            const radius = Math.random() * 1.5 + 0.5;
-            geometry = new THREE.SphereGeometry(radius, 32, 32);
-            params = { type: 'sphere', radius };
-            break;
-          case 'cylinder':
-            const cylRadius = Math.random() * 1 + 0.5;
-            const height = Math.random() * 2 + 1;
-            geometry = new THREE.CylinderGeometry(cylRadius, cylRadius, height, 32);
-            params = { type: 'cylinder', radius: cylRadius, height };
-            break;
-          case 'torus':
-            const torusRadius = Math.random() * 1 + 0.5;
-            const tube = Math.random() * 0.5 + 0.2;
-            geometry = new THREE.TorusGeometry(torusRadius, tube, 16, 100);
-            params = { type: 'torus', radius: torusRadius, tube };
-            break;
-          case 'cone':
-            const coneRadius = Math.random() * 1 + 0.5;
-            const coneHeight = Math.random() * 2 + 1;
-            geometry = new THREE.ConeGeometry(coneRadius, coneHeight, 32);
-            params = { type: 'cone', radius: coneRadius, height: coneHeight };
-            break;
-          case 'octahedron':
-            const octRadius = Math.random() * 1.5 + 0.5;
-            geometry = new THREE.OctahedronGeometry(octRadius);
-            params = { type: 'octahedron', radius: octRadius };
-            break;
-          case 'dodecahedron':
-            const dodRadius = Math.random() * 1.5 + 0.5;
-            geometry = new THREE.DodecahedronGeometry(dodRadius);
-            params = { type: 'dodecahedron', radius: dodRadius };
-            break;
-          case 'icosahedron':
-            const icoRadius = Math.random() * 1.5 + 0.5;
-            geometry = new THREE.IcosahedronGeometry(icoRadius);
-            params = { type: 'icosahedron', radius: icoRadius };
-            break;
-          case 'tetrahedron':
-            const tetRadius = Math.random() * 1.5 + 0.5;
-            geometry = new THREE.TetrahedronGeometry(tetRadius);
-            params = { type: 'tetrahedron', radius: tetRadius };
-            break;
-          case 'torusKnot':
-            const knotRadius = Math.random() * 1 + 0.5;
-            const knotTube = Math.random() * 0.3 + 0.1;
-            geometry = new THREE.TorusKnotGeometry(knotRadius, knotTube, 100, 16);
-            params = { type: 'torusKnot', radius: knotRadius, tube: knotTube };
-            break;
-          case 'ring':
-            const innerRadius = Math.random() * 0.5 + 0.3;
-            const outerRadius = innerRadius + Math.random() * 1 + 0.5;
-            geometry = new THREE.RingGeometry(innerRadius, outerRadius, 32);
-            params = { type: 'ring', innerRadius, outerRadius };
-            break;
-          case 'plane':
-            const width = Math.random() * 2 + 1;
-            const planeHeight = Math.random() * 2 + 1;
-            geometry = new THREE.PlaneGeometry(width, planeHeight, 10, 10);
-            params = { type: 'plane', width, height: planeHeight };
-            break;
-          case 'pyramid':
-            const pyrRadius = Math.random() * 1 + 0.5;
-            const pyrHeight = Math.random() * 2 + 1;
-            geometry = new THREE.ConeGeometry(pyrRadius, pyrHeight, 4);
-            params = { type: 'pyramid', radius: pyrRadius, height: pyrHeight };
-            break;
-          case 'prism':
-            const prismRadius = Math.random() * 1 + 0.5;
-            const prismHeight = Math.random() * 2 + 1;
-            geometry = new THREE.CylinderGeometry(prismRadius, prismRadius, prismHeight, 6);
-            params = { type: 'prism', radius: prismRadius, height: prismHeight };
-            break;
-          case 'star':
-            const starRadius = Math.random() * 1.5 + 0.5;
-            geometry = new THREE.DodecahedronGeometry(starRadius, 1);
-            params = { type: 'star', radius: starRadius };
-            break;
-          case 'diamond':
-            const diamondRadius = Math.random() * 1 + 0.5;
-            geometry = new THREE.OctahedronGeometry(diamondRadius, 2);
-            params = { type: 'diamond', radius: diamondRadius };
-            break;
-          case 'rounded-cube':
-            const rcSize = Math.random() * 2 + 1;
-            geometry = new THREE.BoxGeometry(rcSize, rcSize, rcSize, 4, 4, 4);
-            params = { type: 'rounded-cube', size: rcSize };
-            break;
-          case 'capsule':
-            const capRadius = Math.random() * 0.5 + 0.3;
-            const capHeight = Math.random() * 2 + 1;
-            geometry = new THREE.CylinderGeometry(capRadius, capRadius, capHeight, 32);
-            params = { type: 'capsule', radius: capRadius, height: capHeight };
-            break;
-          case 'egg':
-            const eggRadius = Math.random() * 1 + 0.5;
-            geometry = new THREE.SphereGeometry(eggRadius, 32, 32);
-            geometry.scale(1, 1.3, 1);
-            params = { type: 'egg', radius: eggRadius };
-            break;
-          case 'mobius-strip':
-            geometry = createParametricShape('mobius-strip');
-            params = { type: 'mobius-strip' };
-            break;
-          case 'klein-bottle':
-            geometry = createParametricShape('klein-bottle');
-            params = { type: 'klein-bottle' };
-            break;
-          case 'shell':
-            geometry = createParametricShape('shell');
-            params = { type: 'shell' };
-            break;
-          case 'double-torus':
-            const dt1 = new THREE.TorusGeometry(0.8, 0.3, 16, 100);
-            const dt2 = new THREE.TorusGeometry(0.8, 0.3, 16, 100);
-            dt2.translate(0.8, 0, 0);
-            geometry = new THREE.BufferGeometry();
-            const dtPositions = [];
-            const dt1Pos = dt1.attributes.position.array;
-            const dt2Pos = dt2.attributes.position.array;
-            for (let i = 0; i < dt1Pos.length; i++) dtPositions.push(dt1Pos[i]);
-            for (let i = 0; i < dt2Pos.length; i++) dtPositions.push(dt2Pos[i]);
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(dtPositions, 3));
-            params = { type: 'double-torus' };
-            break;
-          case 'twisted-box':
-            const tbSize = Math.random() * 2 + 1;
-            geometry = new THREE.BoxGeometry(tbSize, tbSize, tbSize, 10, 10, 10);
-            const tbPos = geometry.attributes.position;
-            for (let i = 0; i < tbPos.count; i++) {
-              const y = tbPos.getY(i);
-              const angle = y * 0.5;
-              const x = tbPos.getX(i);
-              const z = tbPos.getZ(i);
-              tbPos.setX(i, x * Math.cos(angle) - z * Math.sin(angle));
-              tbPos.setZ(i, x * Math.sin(angle) + z * Math.cos(angle));
-            }
-            params = { type: 'twisted-box', size: tbSize };
-            break;
-          case 'spiked-sphere':
-            const ssRadius = Math.random() * 1 + 0.5;
-            geometry = new THREE.IcosahedronGeometry(ssRadius, 1);
-            const ssPos = geometry.attributes.position;
-            for (let i = 0; i < ssPos.count; i++) {
-              const spike = Math.random() * 0.5 + 1;
-              ssPos.setX(i, ssPos.getX(i) * spike);
-              ssPos.setY(i, ssPos.getY(i) * spike);
-              ssPos.setZ(i, ssPos.getZ(i) * spike);
-            }
-            params = { type: 'spiked-sphere', radius: ssRadius };
-            break;
-          case 'gear':
-            const gearRadius = Math.random() * 1 + 0.5;
-            geometry = new THREE.CylinderGeometry(gearRadius, gearRadius, 0.5, 16);
-            params = { type: 'gear', radius: gearRadius };
-            break;
-          case 'spring':
-            const springRadius = Math.random() * 0.5 + 0.3;
-            geometry = new THREE.TorusGeometry(springRadius, 0.1, 8, 100);
-            params = { type: 'spring', radius: springRadius };
-            break;
-          case 'crystal':
-            const crystalSize = Math.random() * 1.5 + 0.5;
-            geometry = new THREE.OctahedronGeometry(crystalSize, 0);
-            geometry.scale(1, 2, 1);
-            params = { type: 'crystal', size: crystalSize };
-            break;
-          case 'polyhedron':
-            const polyRadius = Math.random() * 1.5 + 0.5;
-            const sides = Math.floor(Math.random() * 8) + 8;
-            geometry = new THREE.CylinderGeometry(polyRadius, polyRadius, 1, sides);
-            params = { type: 'polyhedron', radius: polyRadius, sides };
-            break;
-          case 'hyperboloid':
-            const hypRadius = Math.random() * 1 + 0.5;
-            geometry = new THREE.CylinderGeometry(hypRadius, hypRadius * 1.5, 2, 32);
-            const hypPos = geometry.attributes.position;
-            for (let i = 0; i < hypPos.count; i++) {
-              const y = hypPos.getY(i);
-              const scale = 1 - Math.abs(y) * 0.3;
-              hypPos.setX(i, hypPos.getX(i) * scale);
-              hypPos.setZ(i, hypPos.getZ(i) * scale);
-            }
-            params = { type: 'hyperboloid', radius: hypRadius };
-            break;
+        if (randomType === 'cube') {
+          const size = Math.random() * 2 + 1;
+          geometry = new THREE.BoxGeometry(size, size, size);
+          params = { type: 'cube', size };
+        } else if (randomType === 'sphere') {
+          const radius = Math.random() * 1.5 + 0.5;
+          geometry = new THREE.SphereGeometry(radius, 32, 32);
+          params = { type: 'sphere', radius };
+        } else if (randomType === 'cylinder') {
+          const cylRadius = Math.random() * 1 + 0.5;
+          const height = Math.random() * 2 + 1;
+          geometry = new THREE.CylinderGeometry(cylRadius, cylRadius, height, 32);
+          params = { type: 'cylinder', radius: cylRadius, height };
+        } else if (randomType === 'torus') {
+          const torusRadius = Math.random() * 1 + 0.5;
+          const tube = Math.random() * 0.5 + 0.2;
+          geometry = new THREE.TorusGeometry(torusRadius, tube, 16, 100);
+          params = { type: 'torus', radius: torusRadius, tube };
+        } else if (randomType === 'cone') {
+          const coneRadius = Math.random() * 1 + 0.5;
+          const coneHeight = Math.random() * 2 + 1;
+          geometry = new THREE.ConeGeometry(coneRadius, coneHeight, 32);
+          params = { type: 'cone', radius: coneRadius, height: coneHeight };
+        } else if (randomType === 'octahedron') {
+          const octRadius = Math.random() * 1.5 + 0.5;
+          geometry = new THREE.OctahedronGeometry(octRadius);
+          params = { type: 'octahedron', radius: octRadius };
+        } else if (randomType === 'dodecahedron') {
+          const dodRadius = Math.random() * 1.5 + 0.5;
+          geometry = new THREE.DodecahedronGeometry(dodRadius);
+          params = { type: 'dodecahedron', radius: dodRadius };
+        } else if (randomType === 'icosahedron') {
+          const icoRadius = Math.random() * 1.5 + 0.5;
+          geometry = new THREE.IcosahedronGeometry(icoRadius);
+          params = { type: 'icosahedron', radius: icoRadius };
+        } else if (randomType === 'tetrahedron') {
+          const tetRadius = Math.random() * 1.5 + 0.5;
+          geometry = new THREE.TetrahedronGeometry(tetRadius);
+          params = { type: 'tetrahedron', radius: tetRadius };
+        } else if (randomType === 'torusKnot') {
+          const knotRadius = Math.random() * 1 + 0.5;
+          const knotTube = Math.random() * 0.3 + 0.1;
+          geometry = new THREE.TorusKnotGeometry(knotRadius, knotTube, 100, 16);
+          params = { type: 'torusKnot', radius: knotRadius, tube: knotTube };
+        } else if (randomType === 'ring') {
+          const innerRadius = Math.random() * 0.5 + 0.3;
+          const outerRadius = innerRadius + Math.random() * 1 + 0.5;
+          geometry = new THREE.RingGeometry(innerRadius, outerRadius, 32);
+          params = { type: 'ring', innerRadius, outerRadius };
+        } else if (randomType === 'pyramid') {
+          const pyrRadius = Math.random() * 1 + 0.5;
+          const pyrHeight = Math.random() * 2 + 1;
+          geometry = new THREE.ConeGeometry(pyrRadius, pyrHeight, 4);
+          params = { type: 'pyramid', radius: pyrRadius, height: pyrHeight };
+        } else if (randomType === 'prism') {
+          const prismRadius = Math.random() * 1 + 0.5;
+          const prismHeight = Math.random() * 2 + 1;
+          geometry = new THREE.CylinderGeometry(prismRadius, prismRadius, prismHeight, 6);
+          params = { type: 'prism', radius: prismRadius, height: prismHeight };
+        } else if (randomType === 'star') {
+          const starRadius = Math.random() * 1.5 + 0.5;
+          geometry = new THREE.DodecahedronGeometry(starRadius, 1);
+          params = { type: 'star', radius: starRadius };
+        } else if (randomType === 'diamond') {
+          const diamondRadius = Math.random() * 1 + 0.5;
+          geometry = new THREE.OctahedronGeometry(diamondRadius, 2);
+          params = { type: 'diamond', radius: diamondRadius };
         }
         
         let material;
         
-        switch(randomMaterial) {
-          case 'metallic':
-            material = new THREE.MeshStandardMaterial({
-              color: randomColor,
-              metalness: 0.9,
-              roughness: 0.1
-            });
-            break;
-          case 'glossy':
+        if (randomMaterial === 'metallic') {
+          material = new THREE.MeshStandardMaterial({
+            color: randomColor,
+            metalness: 0.9,
+            roughness: 0.1
+          });
+        } else if (randomMaterial === 'glossy') {
+          material = new THREE.MeshPhongMaterial({
+            color: randomColor,
+            shininess: 150,
+            specular: 0xffffff
+          });
+        } else if (randomMaterial === 'wireframe') {
+          material = new THREE.MeshBasicMaterial({
+            color: randomColor,
+            wireframe: true
+          });
+        } else {
+          if (randomTexture === 'solid') {
             material = new THREE.MeshPhongMaterial({
               color: randomColor,
-              shininess: 150,
+              shininess: 80
+            });
+          } else {
+            const texture = createTexture(randomTexture, randomColor);
+            material = new THREE.MeshPhongMaterial({
+              map: texture,
+              shininess: 80
+            });
+          }
+        }
+        
+        if (meshRef.current) {
+          sceneRef.current.remove(meshRef.current);
+        }
+        
+        meshRef.current = new THREE.Mesh(geometry, material);
+        sceneRef.current.add(meshRef.current);
+        
+        setAssetType(randomType);
+        setTextureType(randomTexture);
+        setMaterialType(randomMaterial);
+        setGeometryData({ geometry, params, color: randomColor, texture: randomTexture, material: randomMaterial });
+      };
+
+      useEffect(() => {
+        if (!containerRef.current) return;
+        
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a0a);
+        sceneRef.current = scene;
+        
+        const camera = new THREE.PerspectiveCamera(75, 800 / 600, 0.1, 1000);
+        camera.position.z = 5;
+        cameraRef.current = camera;
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(800, 600);
+        containerRef.current.appendChild(renderer.domElement);
+        rendererRef.current = renderer;
+        
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        
+        const pointLight1 = new THREE.PointLight(0xffffff, 0.8);
+        pointLight1.position.set(5, 5, 5);
+        scene.add(pointLight1);
+        
+        const pointLight2 = new THREE.PointLight(0x4ecdc4, 0.5);
+        pointLight2.position.set(-5, -5, 5);
+        scene.add(pointLight2);
+        
+        const pointLight3 = new THREE.PointLight(0xff6b6b, 0.5);
+        pointLight3.position.set(0, 5, -5);
+        scene.add(pointLight3);
+        
+        generateRandomAsset();
+        
+        let animationId;
+        const animate = () => {
+          animationId = requestAnimationFrame(animate);
+          
+          if (meshRef.current) {
+            meshRef.current.rotation.x += 0.008;
+            meshRef.current.rotation.y += 0.012;
+          }
+          
+          renderer.render(scene, camera);
+        };
+        
+        animate();
+        
+        return () => {
+          if (animationId) {
+            cancelAnimationFrame(animationId);
+          }
+          if (containerRef.current && renderer.domElement && containerRef.current.contains(renderer.domElement)) {
+            containerRef.current.removeChild(renderer.domElement);
+          }
+        };
+      }, []);
+
+      const downloadOBJ = () => {
+        if (!geometryData) return;
+        
+        const { geometry, params, color, texture, material } = geometryData;
+        let objContent = '# Generated 3D Asset\n';
+        objContent += '# Type: ' + params.type + '\n';
+        objContent += '# Color: ' + color.toString(16) + '\n';
+        objContent += '# Texture: ' + texture + '\n';
+        objContent += '# Material: ' + material + '\n\n';
+        
+        const positions = geometry.attributes.position.array;
+        const indices = geometry.index ? geometry.index.array : null;
+        
+        for (let i = 0; i < positions.length; i += 3) {
+          objContent += 'v ' + positions[i] + ' ' + positions[i + 1] + ' ' + positions[i + 2] + '\n';
+        }
+        
+        objContent += '\n';
+        
+        if (indices) {
+          for (let i = 0; i < indices.length; i += 3) {
+            objContent += 'f ' + (indices[i] + 1) + ' ' + (indices[i + 1] + 1) + ' ' + (indices[i + 2] + 1) + '\n';
+          }
+        }
+        
+        const blob = new Blob([objContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = params.type + '_' + texture + '_' + material + '_' + Date.now() + '.obj';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+
+      const downloadJSON = () => {
+        if (!geometryData) return;
+        
+        const { geometry, params, color, texture, material } = geometryData;
+        const positions = Array.from(geometry.attributes.position.array);
+        const indices = geometry.index ? Array.from(geometry.index.array) : null;
+        
+        const jsonData = {
+          type: params.type,
+          parameters: params,
+          color: '#' + color.toString(16).padStart(6, '0'),
+          texture: texture,
+          material: material,
+          vertices: positions,
+          indices: indices,
+          metadata: {
+            generated: new Date().toISOString(),
+            vertexCount: positions.length / 3,
+            faceCount: indices ? indices.length / 3 : positions.length / 9
+          }
+        };
+        
+        const blob = new Blob([JSON.stringify(jsonData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = params.type + '_' + texture + '_' + material + '_' + Date.now() + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+
+      return React.createElement('div', {
+        className: "min-h-screen bg-gradient-to-br from-purple-950 via-gray-900 to-blue-950 flex items-center justify-center p-4"
+      },
+        React.createElement('div', { className: "max-w-5xl w-full" },
+          React.createElement('div', { className: "text-center mb-8" },
+            React.createElement('h1', { 
+              className: "text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-2" 
+            }, "Random 3D Asset Generator"),
+            React.createElement('p', { className: "text-gray-400 text-lg" }, "15 Shapes • 16 Textures • 4 Materials • Infinite Possibilities")
+          ),
+          
+          React.createElement('div', { className: "bg-gray-900 bg-opacity-80 backdrop-blur-lg rounded-2xl shadow-2xl p-6 mb-6 border border-gray-800" },
+            React.createElement('div', { ref: containerRef, className: "flex justify-center mb-6 rounded-xl overflow-hidden shadow-2xl" }),
+            
+            assetType && React.createElement('div', { className: "text-center mb-6 space-y-3" },
+              React.createElement('div', { className: "inline-block bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 rounded-full" },
+                React.createElement('p', { className: "text-lg text-white font-bold capitalize" }, assetType.replace('-', ' '))
+              ),
+              React.createElement('div', { className: "flex justify-center gap-4 flex-wrap" },
+                React.createElement('p', { className: "text-gray-400 capitalize" }, 
+                  "Texture: ",
+                  React.createElement('span', { className: "text-cyan-400 font-semibold" }, textureType)
+                ),
+                React.createElement('p', { className: "text-gray-400 capitalize" }, 
+                  "Material: ",
+                  React.createElement('span', { className: "text-pink-400 font-semibold" }, materialType)
+                )
+              )
+            ),
+            
+            React.createElement('div', { className: "flex flex-wrap gap-3 justify-center mb-6" },
+              React.createElement('button', {
+                onClick: generateRandomAsset,
+                className: "bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 hover:from-purple-700 hover:via-pink-700 hover:to-red-700 text-white font-bold py-3 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg hover:shadow-purple-500/50"
+              }, "🎲 Generate New Asset"),
+              
+              React.createElement('button', {
+                onClick: downloadOBJ,
+                className: "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg hover:shadow-blue-500/50"
+              }, "📦 OBJ"),
+              
+              React.createElement('button', {
+                onClick: downloadJSON,
+                className: "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-3 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg hover:shadow-green-500/50"
+              }, "📄 JSON")
+            )
+          ),
+          
+          React.createElement('div', { className: "grid md:grid-cols-3 gap-4" },
+            React.createElement('div', { className: "bg-gray-900 bg-opacity-60 backdrop-blur-lg rounded-xl shadow-xl p-5 border border-gray-800" },
+              React.createElement('h2', { className: "text-xl font-bold text-purple-400 mb-3" }, "📐 Shapes (15)"),
+              React.createElement('p', { className: "text-gray-300 text-sm leading-relaxed" }, 
+                "Cube, Sphere, Cylinder, Torus, Cone, Octahedron, Dodecahedron, Icosahedron, Tetrahedron, Torus Knot, Ring, Pyramid, Prism, Star, Diamond"
+              )
+            ),
+            
+            React.createElement('div', { className: "bg-gray-900 bg-opacity-60 backdrop-blur-lg rounded-xl shadow-xl p-5 border border-gray-800" },
+              React.createElement('h2', { className: "text-xl font-bold text-cyan-400 mb-3" }, "🎨 Textures (16)"),
+              React.createElement('p', { className: "text-gray-300 text-sm leading-relaxed" }, 
+                "Solid, Checkerboard, Stripes, Dots, Gradient, Noise, Waves, Hexagons, Brick, Circuit, Camouflage, Carbon Fiber, Wood, Marble, Scales, Stars"
+              )
+            ),
+            
+            React.createElement('div', { className: "bg-gray-900 bg-opacity-60 backdrop-blur-lg rounded-xl shadow-xl p-5 border border-gray-800" },
+              React.createElement('h2', { className: "text-xl font-bold text-pink-400 mb-3" }, "✨ Materials (4)"),
+              React.createElement('p', { className: "text-gray-300 text-sm leading-relaxed" }, 
+                "Standard: Classic phong shading. Metallic: High reflectivity. Glossy: Super shiny. Wireframe: Edge-only rendering"
+              )
+            )
+          )
+        )
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(Random3DGenerator));
+  </script>
+</body>
+</html>
